@@ -1,0 +1,14 @@
+npm i prisma --save
+
+next step is to initialize prisma to this application.
+npx prisma init
+
+We'll get schema.prisma file. We'll define our model's schema in this file.
+
+The next step is to sync our application to the database:
+
+npx prisma generate
+
+Now we need to push our schema to the database:
+
+npx prisma db push
