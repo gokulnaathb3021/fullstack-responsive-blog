@@ -1,6 +1,5 @@
 "use client";
 
-import { revalidatePath } from "next/cache";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -11,13 +10,17 @@ const AddBlog = () => {
   const titleRef = useRef<HTMLInputElement | null>(null);
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
   async function addBlog(title: string, description: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER}/api/blog`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title, description }),
-    });
+    const res = await fetch(
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog`,
+      // "/api/blog",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, description }),
+      }
+    );
     return await res.json();
   }
   async function handleSubmit(e: any) {

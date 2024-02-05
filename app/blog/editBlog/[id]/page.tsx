@@ -12,7 +12,8 @@ const EditBlog = () => {
 
   async function fetchBlogById() {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER}/api/blog/${params.id}`
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog/${params.id}`
+      // `/api/blog/${params.id}`
     );
     const data = await res.json();
     return data.post;
@@ -36,7 +37,8 @@ const EditBlog = () => {
 
   async function updateBlog(title: string, description: string) {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER}/api/blog/${params.id}`,
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog/${params.id}`,
+      // `/api/blog/${params.id}`,
       {
         method: "PUT",
         headers: {
@@ -65,7 +67,8 @@ const EditBlog = () => {
   async function handleDelete() {
     toast.loading("Deleting blog🚀", { id: "3" });
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER}/api/blog/${params.id}`,
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog/${params.id}`,
+      // `/api/blog/${params.id}`,
       { method: "DELETE" }
     );
     const response = await res.json();
