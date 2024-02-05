@@ -62,14 +62,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 async function fetchBlogs() {
-  const res = await fetch(
-    `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog`,
-    {
-      next: {
-        revalidate: 10,
-      },
-    }
-  );
+  const res = await fetch(`/api/blog`, {
+    next: {
+      revalidate: 10,
+    },
+  });
   const data = await res.json();
   return data.posts;
 }

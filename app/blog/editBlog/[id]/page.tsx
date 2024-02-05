@@ -11,10 +11,7 @@ const EditBlog = () => {
   const router = useRouter();
 
   async function fetchBlogById() {
-    const res = await fetch(
-      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog/${params.id}`
-      // `/api/blog/${params.id}`
-    );
+    const res = await fetch(`/api/blog/${params.id}`);
     const data = await res.json();
     return data.post;
   }
@@ -36,17 +33,13 @@ const EditBlog = () => {
   });
 
   async function updateBlog(title: string, description: string) {
-    const res = await fetch(
-      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog/${params.id}`,
-      // `/api/blog/${params.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title, description }),
-      }
-    );
+    const res = await fetch(`/api/blog/${params.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title, description }),
+    });
     return await res.json();
   }
 
@@ -66,11 +59,7 @@ const EditBlog = () => {
 
   async function handleDelete() {
     toast.loading("Deleting blog🚀", { id: "3" });
-    const res = await fetch(
-      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/blog/${params.id}`,
-      // `/api/blog/${params.id}`,
-      { method: "DELETE" }
-    );
+    const res = await fetch(`/api/blog/${params.id}`, { method: "DELETE" });
     const response = await res.json();
     if (response.message === "OK")
       toast.success("Blog deleted successfully!🚀", { id: "3" });
