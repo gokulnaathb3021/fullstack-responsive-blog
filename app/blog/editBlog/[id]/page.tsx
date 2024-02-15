@@ -1,8 +1,12 @@
 "use client";
 
+import { storage } from "@/firebase/config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { v4 } from "uuid";
 
 const EditBlog = () => {
   const titleRef = useRef<HTMLInputElement | null>(null);
@@ -16,6 +20,7 @@ const EditBlog = () => {
     return data.post;
   }
 
+  let imageUrl: string;
   useEffect(() => {
     toast.loading("Fetching blog details🚀", { id: "1" });
     fetchBlogById()
@@ -23,6 +28,7 @@ const EditBlog = () => {
         if (titleRef.current && descriptionRef.current) {
           titleRef.current.value = data.title;
           descriptionRef.current.value = data.description;
+          imageUrl = data.imageUrl;
           toast.success("Fetch complete🚀", { id: "1" });
         }
       })
@@ -32,24 +38,52 @@ const EditBlog = () => {
       });
   });
 
-  async function updateBlog(title: string, description: string) {
+  async function updateBlog(
+    title: string,
+    description: string,
+    imageUrl: string
+  ) {
     const res = await fetch(`/api/blog/${params.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, description }),
+      body: JSON.stringify({ title, description, imageUrl }),
     });
     return await res.json();
   }
 
+  let imageFile: File;
+  function setFile(f: File) {
+    imageFile = f;
+  }
+
   async function handleUpdate(e: any) {
     e.preventDefault();
+
+    if (imageFile) {
+      const fileName = imageFile.name + v4();
+      const imageRef = ref(storage, `images/${fileName}`);
+
+      try {
+        toast.loading("Uploading image🚀", { id: "0" });
+        const snapshot = await uploadBytes(imageRef, imageFile);
+        const url = await getDownloadURL(snapshot.ref);
+        imageUrl = url;
+        toast.success("Image uploaded🚀", { id: "0" });
+      } catch (e) {
+        alert("Error uploading image!");
+        console.log("Error uploading image!");
+        return;
+      }
+    }
+
     if (titleRef.current && descriptionRef.current) {
       toast.loading("Updating your blog🚀", { id: "2" });
       const res = await updateBlog(
         titleRef.current.value,
-        descriptionRef.current.value
+        descriptionRef.current.value,
+        imageUrl
       );
       if (res.message === "OK") toast.success("Blog Updated!!🚀", { id: "2" });
       else toast.error("Couldn't update blog!😕", { id: "2" });
@@ -73,6 +107,14 @@ const EditBlog = () => {
         <p className="text-2xl text-slate-200 font-bold p-3">Add A Blog🚀</p>
         <form onSubmit={handleUpdate}>
           <input
+            className="rounded-md px-4 py-2 my-2 bg-white"
+            type="file"
+            onChange={(event) => {
+              const selectedFile = event.target.files?.[0];
+              if (selectedFile) setFile(selectedFile);
+            }}
+          />
+          <input
             ref={titleRef}
             type="text"
             placeholder="Enter Title"
@@ -87,12 +129,19 @@ const EditBlog = () => {
             Update
           </button>
         </form>
-        <button
-          className="font-semibold px-4 py-2 bg-red-400 hover:bg-red-500 text-slate-100"
-          onClick={handleDelete}
-        >
-          Delete
-        </button>
+        <div>
+          <button
+            className="font-semibold px-4 py-2 bg-red-400 hover:bg-red-500 text-slate-100 mr-5"
+            onClick={handleDelete}
+          >
+            Delete
+          </button>
+          <Link href="/">
+            <button className="font-semibold px-4 py-2 bg-indigo-400 hover:bg-indigo-500 text-slate-100 mr-5">
+              Discard
+            </button>
+          </Link>
+        </div>
       </div>
     </>
   );

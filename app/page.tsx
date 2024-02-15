@@ -58,6 +58,7 @@
 // }
 
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -75,6 +76,7 @@ type postObject = {
   title: string;
   description: string;
   date: string;
+  imageUrl: string;
 };
 export default function Home() {
   const [posts, setPosts] = useState<postObject[] | null>(null);
@@ -133,6 +135,12 @@ export default function Home() {
                   {new Date(post.date).toDateString()}
                 </blockquote>
               </div>
+              <Image
+                src={post.imageUrl}
+                alt={post.imageUrl}
+                width="300"
+                height="200"
+              ></Image>
               <div className="mr-auto my-1">
                 <h2>{post.description}</h2>
               </div>

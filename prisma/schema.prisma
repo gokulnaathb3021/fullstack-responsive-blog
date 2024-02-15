@@ -14,5 +14,6 @@ model Post {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   title String
   description String
+  imageUrl String
   date DateTime @default(now())
 }
